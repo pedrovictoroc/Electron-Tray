@@ -13,6 +13,7 @@
   "author": "stormsamurai1 <stormsamurai1@yahoo.com.br>",
   "license": "MIT",
   "dependencies": {
+    "auto-launch": "^5.0.5",
     "cross-spawn": "^7.0.1",
     "electron-store": "^8.0.1",
     "fix-path": "^2.1.0"
@@ -25,9 +26,6 @@
     "eslint-plugin-import": "^2.20.0"
   },
   "build": {
-    "extraFiles": [
-      "data/database.js"
-    ],
     "win": {
       "target": "NSIS",
       "icon": "build/icon.ico"

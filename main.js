@@ -1,12 +1,20 @@
-//resolve = Electron use caminhos relativos
-//basename = Pegar nome do projeto
-const {resolve, basename} = require('path')
+const AutoLaunch = require('auto-launch');
+const autoLauncher = new AutoLaunch({
+    name: "ElectronTray"
+});
 
-//Roda comandos de terminal independente da plataforma
+autoLauncher.isEnabled().then(function(isEnabled) {
+  if (isEnabled) return;
+   autoLauncher.enable();
+}).catch(function (err) {
+  throw err;
+});
+ 
+
+const { resolve, basename } = require('path')
+
 const spawn = require('cross-spawn')
 
-//Concerta problemas de path relativo em alguns
-//sistemas que não aceitam spawn
 const FixPath = require('fix-path');
 
 const { app ,Menu, Tray, dialog} = require('electron')
@@ -17,10 +25,6 @@ const database = new Store()
 
 FixPath();
 
-
-//Concerto rápido para o problema do Tray
-//icon desaparecendo rapidamente
-//Fonte do problema: variavel cai no garbage Collector
 let tray = null
 
 async function render(){
@@ -58,9 +62,6 @@ async function render(){
 
     const contextMenu = Menu.buildFromTemplate([
         {
-            //Remova se quiser o icone do VSCode
-            //icon: resolve(__dirname,'assets','mainIcon.png'),
-
             label: 'Adicionar novo projeto ...',
             click:()=>{
                 const result = dialog.showOpenDialogSync({ properties: ['openDirectory']})
@@ -90,7 +91,6 @@ async function render(){
 
 app.on('ready', () =>{
     tray = new Tray(resolve(__dirname,'assets','mainIcon.png'))
-    
     
     render();
 })
