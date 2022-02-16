@@ -62,6 +62,12 @@ async function render(){
 
     const contextMenu = Menu.buildFromTemplate([
         {
+            label: 'Sair',
+            click:()=>{
+                process.exit()
+            }
+        },
+        {
             label: 'Adicionar novo projeto ...',
             click:()=>{
                 const result = dialog.showOpenDialogSync({ properties: ['openDirectory']})
