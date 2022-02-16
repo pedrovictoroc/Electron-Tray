@@ -11,11 +11,9 @@ const FixPath = require('fix-path');
 
 const { app ,Menu, Tray, dialog} = require('electron')
 
-const nedb = require('nedb')
-const dataBase = new nedb({
-    filename: resolve(__dirname,'..','..','data','database.js'),
-    autoload: true
-})
+const Store = require('electron-store')
+
+const database = new Store()
 
 FixPath();
 
@@ -31,40 +29,32 @@ async function render(){
         tray = new Tray(resolve(__dirname,'assets','mainIcon.png'))
     }
 
-    const storedProjects = new Promise((resolve,reject) =>{
-        dataBase.find({},(err,doc)=>{
-            try{
-                resolve(doc)
-            }catch(e){
-                console.log(e)
-            }
-        })
-    })
-    const projetos = await storedProjects
+    const storedProjects = JSON.parse(JSON.stringify(database.store))
 
-    const projects = [projetos] ? projetos : []
-    
+    const trayProjects = []
 
-    const itens = projects.map((project)=>{
-        return { label: project.name,
+    for(let projectLabel in storedProjects){
+        const project = {
+            label: projectLabel,
                  submenu: [
                     {
                          label: 'Abrir no VSCode',
                          click: () => {
-                            spawn.sync('code', [project.path], {stdio: 'inherit'})
+                            spawn.sync('code', [storedProjects[projectLabel]], {stdio: 'inherit'})
                         }
                     },
                     {
                         label: 'Remover',
                         click: () =>{
-                            dataBase.remove({path: project.path})
+                            database.delete(projectLabel)
                             render()
                         }
                     }
                  ]
         }
-    })    
 
+        trayProjects.push(project)
+    }
 
     const contextMenu = Menu.buildFromTemplate([
         {
@@ -81,10 +71,7 @@ async function render(){
                 
                 const name = basename(path)
 
-                dataBase.insert({
-                    path,
-                    name
-                })
+                database.set(name,path)
 
                 render();
             }
@@ -92,14 +79,13 @@ async function render(){
         {
             type: 'separator'
         },
-        ...itens,
+        ...trayProjects,
         {
             type: 'separator'
         },
     ])
-
-
     tray.setContextMenu(contextMenu)
+    
 }
 
 app.on('ready', () =>{

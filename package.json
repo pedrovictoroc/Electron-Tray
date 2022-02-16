@@ -14,8 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "cross-spawn": "^7.0.1",
-    "fix-path": "^2.1.0",
-    "nedb": "^1.8.0"
+    "electron-store": "^8.0.1",
+    "fix-path": "^2.1.0"
   },
   "devDependencies": {
     "electron": "^7.1.9",
